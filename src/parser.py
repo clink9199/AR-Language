@@ -93,6 +93,8 @@ class Parser:
         if tok.type == TT.RETURN:  return self.parse_return()
         if tok.type == TT.IF:      return self.parse_if()
         if tok.type == TT.LOOP:    return self.parse_loop()
+        if tok.type == TT.FOR:     return self.parse_for()
+        if tok.type == TT.IMPORT:  return self.parse_import()
         if tok.type == TT.FUNC:    return self.parse_func()
         if tok.type == TT.CLASS:   return self.parse_class()
         return self.parse_expression_statement()
@@ -157,6 +159,28 @@ class Parser:
         body = self.parse_block()
         return LoopStatement(condition=condition, body=body)
 
+    def parse_for(self) -> ForStatement:
+        """
+        for item in iterable {
+            ...
+        }
+        """
+        self.advance()  # consume 'for'
+        iterator_name = self.expect(TT.IDENT, "Expected iterator name.").value
+        self.expect(TT.IN, "Expected 'in' after iterator name.")
+        iterable = self.parse_expression()
+        body = self.parse_block()
+        return ForStatement(iterator_name=iterator_name, iterable=iterable, body=body)
+
+    def parse_import(self) -> ImportStatement:
+        """
+        import "math.ar"
+        """
+        self.advance()  # consume 'import'
+        filepath = self.expect(TT.STRING, "Expected string file path after 'import'.").value
+        self.match(TT.NEWLINE)
+        return ImportStatement(filepath=filepath)
+
     def parse_func(self) -> FuncDefinition:
         """
         func name(params) {
@@ -207,6 +231,8 @@ class Parser:
             self.advance()
             value = self.parse_expression()
             self.match(TT.NEWLINE)
+            if isinstance(expr, IndexAccess):
+                return IndexAssignment(obj=expr.obj, index=expr.index, value=value)
             return AssignStatement(target=expr, value=value)
         self.match(TT.NEWLINE)
         return ExpressionStatement(expression=expr)
@@ -318,6 +344,11 @@ class Parser:
                 args = self.parse_args()
                 self.expect(TT.RPAREN)
                 expr = CallExpression(callee=expr, args=args)
+            elif self.check(TT.LBRACKET):
+                self.advance()
+                index = self.parse_expression()
+                self.expect(TT.RBRACKET)
+                expr = IndexAccess(obj=expr, index=index)
             else:
                 break
         return expr
@@ -332,6 +363,7 @@ class Parser:
         if tok.type == TT.SELF:   self.advance(); return Identifier("self")
         if tok.type == TT.IDENT:  self.advance(); return Identifier(tok.value)
         if tok.type == TT.NEW:    return self.parse_new()
+        if tok.type == TT.LBRACKET: return self.parse_array_literal()
 
         if tok.type == TT.LPAREN:
             self.advance()
@@ -342,6 +374,16 @@ class Parser:
         raise SyntaxError(
             f"[AR Parser] Line {tok.line}: Unexpected token {tok.type.name} ({tok.value!r})"
         )
+
+    def parse_array_literal(self) -> ArrayLiteral:
+        self.advance()  # consume '['
+        elements = []
+        if not self.check(TT.RBRACKET):
+            elements.append(self.parse_expression())
+            while self.match(TT.COMMA):
+                elements.append(self.parse_expression())
+        self.expect(TT.RBRACKET)
+        return ArrayLiteral(elements=elements)
 
     def parse_new(self) -> NewExpression:
         self.advance()  # consume 'new'

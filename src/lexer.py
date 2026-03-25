@@ -37,6 +37,9 @@ class TT(Enum):
     IF       = auto()
     ELSE     = auto()
     LOOP     = auto()
+    FOR      = auto()
+    IN       = auto()
+    IMPORT   = auto()
     CLASS    = auto()
     INIT     = auto()
     NEW      = auto()
@@ -63,6 +66,8 @@ class TT(Enum):
     RPAREN   = auto()   # )
     LBRACE   = auto()   # {
     RBRACE   = auto()   # }
+    LBRACKET = auto()   # [
+    RBRACKET = auto()   # ]
     COMMA    = auto()   # ,
     DOT      = auto()   # .
 
@@ -89,6 +94,9 @@ KEYWORDS: dict = {
     "if":     TT.IF,
     "else":   TT.ELSE,
     "loop":   TT.LOOP,
+    "for":    TT.FOR,
+    "in":     TT.IN,
+    "import": TT.IMPORT,
     "class":  TT.CLASS,
     "init":   TT.INIT,
     "new":    TT.NEW,
@@ -192,6 +200,8 @@ class Lexer:
             elif ch == ")":  self.advance(); self.add(TT.RPAREN,  ")")
             elif ch == "{":  self.advance(); self.add(TT.LBRACE,  "{")
             elif ch == "}":  self.advance(); self.add(TT.RBRACE,  "}")
+            elif ch == "[":  self.advance(); self.add(TT.LBRACKET, "[")
+            elif ch == "]":  self.advance(); self.add(TT.RBRACKET, "]")
             elif ch == ",":  self.advance(); self.add(TT.COMMA,   ",")
             elif ch == ".":  self.advance(); self.add(TT.DOT,     ".")
 

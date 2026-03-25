@@ -73,6 +73,12 @@ class NullLiteral(Node):
     pass
 
 
+@dataclass
+class ArrayLiteral(Node):
+    """An array of values. Example: [1, 2, 3]"""
+    elements: List[Node] = field(default_factory=list)
+
+
 # ─────────────────────────────────────────────
 #  IDENTIFIER  (a variable name like "x" or "name")
 # ─────────────────────────────────────────────
@@ -137,6 +143,18 @@ class MemberAccess(Node):
 
 
 @dataclass
+class IndexAccess(Node):
+    """
+    Accessing an element in an array or string.
+    Example: arr[0]
+      obj   = Identifier("arr")
+      index = NumberLiteral(0)
+    """
+    obj: Node
+    index: Node
+
+
+@dataclass
 class NewExpression(Node):
     """
     Creating a new object from a class.
@@ -184,6 +202,20 @@ class AssignStatement(Node):
 
 
 @dataclass
+class IndexAssignment(Node):
+    """
+    Reassigning an element in an array.
+    Example: arr[0] = 5
+      obj   = Identifier("arr")
+      index = NumberLiteral(0)
+      value = NumberLiteral(5)
+    """
+    obj: Node
+    index: Node
+    value: Node
+
+
+@dataclass
 class ReturnStatement(Node):
     """
     Returns a value from a function.
@@ -218,6 +250,26 @@ class LoopStatement(Node):
     """
     condition: Node
     body: List[Node] = field(default_factory=list)
+
+
+@dataclass
+class ForStatement(Node):
+    """
+    For-each loop over an iterable.
+    Example: for item in items { ... }
+    """
+    iterator_name: str
+    iterable: Node
+    body: List[Node] = field(default_factory=list)
+
+
+@dataclass
+class ImportStatement(Node):
+    """
+    Importing another file.
+    Example: import "math.ar"
+    """
+    filepath: str
 
 
 # ─────────────────────────────────────────────

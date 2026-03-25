@@ -167,6 +167,9 @@ class Interpreter:
     def visit_NullLiteral(self, node: NullLiteral, env: Environment):
         return None
 
+    def visit_ArrayLiteral(self, node: ArrayLiteral, env: Environment):
+        return [self.visit(e, env) for e in node.elements]
+
     # ── Identifier ────────────────────────────────────────────────
 
     def visit_Identifier(self, node: Identifier, env: Environment):
@@ -223,23 +226,50 @@ class Interpreter:
             return obj.get_property(node.member)
         raise AttributeError(f"[AR] Cannot access member '{node.member}' on {type(obj).__name__}.")
 
+    def visit_IndexAccess(self, node: IndexAccess, env: Environment):
+        obj = self.visit(node.obj, env)
+        index = self.visit(node.index, env)
+        try:
+            return obj[index]
+        except Exception as e:
+            raise RuntimeError(f"[AR] Invalid index access: {e}")
+
     def visit_CallExpression(self, node: CallExpression, env: Environment):
         """
         Call a function or method.
-        1. Evaluate the callee (what are we calling?)
-        2. Evaluate each argument
-        3. If it's a method call on an object, handle 'self'
-        4. Create a new scope and execute the function body
         """
         args = [self.visit(a, env) for a in node.args]
 
-        # Method call:  cat.speak()
+        # Method call:  cat.speak() or arr.push()
         if isinstance(node.callee, MemberAccess):
             obj = self.visit(node.callee.obj, env)
+            member = node.callee.member
+
+            # --- Native Array Methods ---
+            if isinstance(obj, list):
+                if member == "push":
+                    obj.append(args[0])
+                    return None
+                if member == "pop":
+                    return obj.pop()
+                if member == "length":
+                    return len(obj)
+                raise AttributeError(f"[AR] Array has no method '{member}'")
+                
+            # --- Native String Methods ---
+            if isinstance(obj, str):
+                if member == "upper": return obj.upper()
+                if member == "lower": return obj.lower()
+                if member == "length": return len(obj)
+                if member == "split": 
+                    sep = args[0] if args else " "
+                    return obj.split(sep)
+                raise AttributeError(f"[AR] String has no method '{member}'")
+
             if isinstance(obj, ArInstance):
-                method = obj.get_method(node.callee.member)
+                method = obj.get_method(member)
                 return self._call_function(method, [obj] + args)
-            raise TypeError(f"[AR] '{node.callee.member}' is not callable on this object.")
+            raise TypeError(f"[AR] '{member}' is not callable on this object.")
 
         # Regular function call:  greet("Ahmed")
         func = self.visit(node.callee, env)
@@ -330,6 +360,15 @@ class Interpreter:
         else:
             raise SyntaxError("[AR] Invalid assignment target.")
 
+    def visit_IndexAssignment(self, node: IndexAssignment, env: Environment):
+        obj = self.visit(node.obj, env)
+        index = self.visit(node.index, env)
+        value = self.visit(node.value, env)
+        try:
+            obj[index] = value
+        except Exception as e:
+            raise RuntimeError(f"[AR] Invalid index assignment: {e}")
+
     def visit_ReturnStatement(self, node: ReturnStatement, env: Environment):
         """Raise a ReturnSignal to break out of the current function."""
         value = self.visit(node.value, env) if node.value else None
@@ -351,6 +390,17 @@ class Interpreter:
             loop_env = Environment(parent=env)
             self.exec_block(node.body, loop_env)
 
+    def visit_ForStatement(self, node: ForStatement, env: Environment):
+        """Iterate over an array or string."""
+        iterable = self.visit(node.iterable, env)
+        if not isinstance(iterable, (list, str)):
+            raise TypeError(f"[AR] Cannot iterate over {type(iterable).__name__}")
+        
+        for item in iterable:
+            loop_env = Environment(parent=env)
+            loop_env.set(node.iterator_name, item)
+            self.exec_block(node.body, loop_env)
+
     def visit_FuncDefinition(self, node: FuncDefinition, env: Environment):
         """
         Store a function definition in the current environment.
@@ -363,6 +413,25 @@ class Interpreter:
         """Store a class definition in the current environment."""
         ar_class = ArClass(definition=node, closure=env)
         env.set(node.name, ar_class)
+
+    def visit_ImportStatement(self, node: ImportStatement, env: Environment):
+        import os
+        if not os.path.exists(node.filepath):
+            raise FileNotFoundError(f"[AR] Imported file not found: {node.filepath}")
+            
+        with open(node.filepath, 'r', encoding='utf-8') as f:
+            source = f.read()
+            
+        from src.lexer import Lexer
+        from src.parser import Parser
+        
+        lexer = Lexer(source)
+        tokens = lexer.tokenize()
+        parser = Parser(tokens)
+        program = parser.parse()
+        
+        for stmt in program.statements:
+            self.visit(stmt, env)
 
     def visit_ExpressionStatement(self, node: ExpressionStatement, env: Environment):
         """Evaluate the expression (often a function call) and discard the result."""
@@ -379,4 +448,6 @@ class Interpreter:
         if value is None:    return "null"
         if value is True:    return "true"
         if value is False:   return "false"
+        if isinstance(value, list):
+            return "[" + ", ".join(self._display(v) for v in value) + "]"
         return str(value)

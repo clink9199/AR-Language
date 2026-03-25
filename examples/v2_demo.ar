@@ -1,0 +1,35 @@
+## V2 Demo for AR Language
+
+output("--- 1. Arrays & Indexing ---")
+let nums = [10, 20, 30]
+output("Original array: " + nums)
+output("nums[1] = " + nums[1])
+nums[1] = 99
+output("Modified array: " + nums)
+
+output("")
+output("--- 2. Built-in Methods ---")
+let arr = ["apple"]
+arr.push("banana")
+output("Pushed banana: " + arr)
+output("Array length: " + arr.length())
+output("Popped item: " + arr.pop())
+
+let greeting = "hello world"
+output("Original string: " + greeting)
+output("Uppercase: " + greeting.upper())
+output("Length: " + greeting.length())
+output("Split: " + greeting.split(" "))
+
+output("")
+output("--- 3. For Loops ---")
+let names = ["Ahmed", "Sarah", "John"]
+for name in names {
+    output("Hello, " + name + "!")
+}
+
+output("")
+output("--- 4. Modules & Imports ---")
+import "examples/math_util.ar"
+output("Imported pi: " + pi)
+output("Imported square(5): " + square(5))

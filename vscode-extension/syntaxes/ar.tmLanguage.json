@@ -40,9 +40,9 @@
     },
 
     "keywords-control": {
-      "comment": "Control flow keywords — if, else, loop, return",
+      "comment": "Control flow keywords — if, else, loop, return, for, in, import",
       "name": "keyword.control.ar",
-      "match": "\\b(if|else|loop|return)\\b"
+      "match": "\\b(if|else|loop|return|for|in|import)\\b"
     },
 
     "keywords-declaration": {

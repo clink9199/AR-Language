@@ -1,0 +1,7 @@
+## math_util.ar (A module for V2 demo)
+
+func square(x) {
+    return x * x
+}
+
+let pi = 3.14159
