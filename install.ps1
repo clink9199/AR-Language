@@ -3,7 +3,7 @@
 # This script installs AR Language on any Windows PC.
 # Run it in PowerShell with one command:
 #
-#   irm https://raw.githubusercontent.com/YOUR_USERNAME/ar-language/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/clink9199/AR-Language/main/install.ps1 | iex
 #
 # What it does:
 #   1. Creates  C:\Program Files\AR Language\
@@ -14,9 +14,8 @@
 $ErrorActionPreference = "Stop"
 
 # ── Configuration ─────────────────────────────────────────────────
-# IMPORTANT: Replace YOUR_USERNAME with your real GitHub username before publishing!
-$GITHUB_USER = "YOUR_USERNAME"
-$GITHUB_REPO = "ar-language"
+$GITHUB_USER = "clink9199"
+$GITHUB_REPO = "AR-Language"
 $INSTALL_DIR  = "$env:LOCALAPPDATA\ARLanguage"
 
 Write-Host ""

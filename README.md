@@ -12,11 +12,11 @@
 
 **One command in PowerShell:**
 ```powershell
-irm https://raw.githubusercontent.com/YOUR_USERNAME/ar-language/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/clink9199/AR-Language/main/install.ps1 | iex
 ```
-> Replace `YOUR_USERNAME` with your GitHub username. Open a new terminal after installing.
+> Replace `clink9199` with your GitHub username. Open a new terminal after installing.
 
-**Or download manually:** grab `ar.exe` from the [Releases](https://github.com/YOUR_USERNAME/ar-language/releases) page and add it to your PATH.
+**Or download manually:** grab `ar.exe` from the [Releases](https://github.com/clink9199/AR-Language/releases) page and add it to your PATH.
 
 ---
 
@@ -98,7 +98,7 @@ p.greet()
 
 ## VS Code Extension
 
-1. Download `ar-language-1.0.0.vsix` from [Releases](https://github.com/YOUR_USERNAME/ar-language/releases)
+1. Download `ar-language-1.0.0.vsix` from [Releases](https://github.com/clink9199/AR-Language/releases)
 2. In VS Code: `Ctrl+Shift+P` → `Extensions: Install from VSIX...`
 3. Select the downloaded file → **Done!**
 
