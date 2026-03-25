@@ -1,0 +1,35 @@
+{
+  "name": "ar-language",
+  "displayName": "AR Language",
+  "description": "Syntax highlighting and language support for AR Language (.ar files)",
+  "version": "1.0.0",
+  "publisher": "ar-lang",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ar-lang/ar-language"
+  },
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ar",
+        "aliases": ["AR Language", "ar"],
+        "extensions": [".ar"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ar",
+        "scopeName": "source.ar",
+        "path": "./syntaxes/ar.tmLanguage.json"
+      }
+    ]
+  }
+}

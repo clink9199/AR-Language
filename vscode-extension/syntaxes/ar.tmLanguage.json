@@ -1,0 +1,138 @@
+{
+  "name": "AR Language",
+  "scopeName": "source.ar",
+  "fileTypes": ["ar"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords-control" },
+    { "include": "#keywords-declaration" },
+    { "include": "#keywords-oop" },
+    { "include": "#keywords-builtin" },
+    { "include": "#constants" },
+    { "include": "#numbers" },
+    { "include": "#operators" },
+    { "include": "#class-definition" },
+    { "include": "#function-definition" },
+    { "include": "#function-call" },
+    { "include": "#self-keyword" },
+    { "include": "#identifiers" }
+  ],
+  "repository": {
+
+    "comments": {
+      "comment": "Single-line comment starting with ##",
+      "name": "comment.line.double-hash.ar",
+      "match": "##.*$"
+    },
+
+    "strings": {
+      "comment": "Double-quoted string literals",
+      "name": "string.quoted.double.ar",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.ar",
+          "match": "\\\\(n|t|r|\\\\|\")"
+        }
+      ]
+    },
+
+    "keywords-control": {
+      "comment": "Control flow keywords — if, else, loop, return",
+      "name": "keyword.control.ar",
+      "match": "\\b(if|else|loop|return)\\b"
+    },
+
+    "keywords-declaration": {
+      "comment": "Declaration keywords — let, func",
+      "name": "keyword.declaration.ar",
+      "match": "\\b(let|func)\\b"
+    },
+
+    "keywords-oop": {
+      "comment": "OOP keywords — class, init, new",
+      "name": "keyword.other.oop.ar",
+      "match": "\\b(class|init|new)\\b"
+    },
+
+    "keywords-builtin": {
+      "comment": "Built-in statement keyword — output",
+      "name": "support.function.builtin.ar",
+      "match": "\\boutput\\b"
+    },
+
+    "constants": {
+      "comment": "Boolean and null constants",
+      "name": "constant.language.ar",
+      "match": "\\b(true|false|null)\\b"
+    },
+
+    "numbers": {
+      "comment": "Numeric literals — integers and floats",
+      "name": "constant.numeric.ar",
+      "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+    },
+
+    "operators": {
+      "comment": "All operators — math, comparison, logical",
+      "patterns": [
+        {
+          "name": "keyword.operator.logical.ar",
+          "match": "\\b(and|or|not)\\b"
+        },
+        {
+          "name": "keyword.operator.comparison.ar",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.assignment.ar",
+          "match": "(?<![=!<>])=(?!=)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.ar",
+          "match": "[\\+\\-\\*\\/]"
+        }
+      ]
+    },
+
+    "class-definition": {
+      "comment": "Highlight the class name after 'class' keyword",
+      "match": "\\b(class)\\s+([A-Z][a-zA-Z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.other.oop.ar" },
+        "2": { "name": "entity.name.type.class.ar" }
+      }
+    },
+
+    "function-definition": {
+      "comment": "Highlight the function name after 'func' keyword",
+      "match": "\\b(func)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.declaration.ar" },
+        "2": { "name": "entity.name.function.ar" }
+      }
+    },
+
+    "function-call": {
+      "comment": "Highlight function/method call names",
+      "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=\\()",
+      "captures": {
+        "1": { "name": "entity.name.function.call.ar" }
+      }
+    },
+
+    "self-keyword": {
+      "comment": "self refers to the current object instance",
+      "name": "variable.language.self.ar",
+      "match": "\\bself\\b"
+    },
+
+    "identifiers": {
+      "comment": "General identifiers (variables)",
+      "name": "variable.other.ar",
+      "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+    }
+  }
+}
