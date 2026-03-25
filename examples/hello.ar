@@ -1,17 +1,13 @@
 ## Hello World in AR Language
-## This is the simplest possible AR program.
-## The 'output' keyword prints something to the screen.
 
-output "Hello, World!"
-output "Welcome to AR Language v1.0"
-output ""
+output("Hello, World!")
+output("Welcome to AR Language v1.1")
 
 ## Variables
-## Use 'let' to create a variable and store a value in it.
 let language = "AR Language"
 let version  = 1
 let stable   = true
 
-output "Language: " + language
-output "Version:  " + version
-output "Stable:   " + stable
+output("Language: " + language)
+output("Version:  " + version)
+output("Stable:   " + stable)

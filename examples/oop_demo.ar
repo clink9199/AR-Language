@@ -1,45 +1,35 @@
 ## OOP Demo in AR Language
-## This shows classes, objects, inheritance-style methods, and 'self'.
 
-## ─────────────────────────────────────
-##  Define a class called 'Animal'
-## ─────────────────────────────────────
-class Animal:
-
-    ## init is the CONSTRUCTOR — it runs when you create a new object.
-    ## 'self' refers to the object itself (like 'this' in other languages).
-    init(self, name, sound):
+class Animal {
+    init(self, name, sound) {
         self.name  = name
         self.sound = sound
+    }
 
-    ## A method is a function that belongs to a class.
-    func speak(self):
-        output self.name + " says: " + self.sound
+    func speak(self) {
+        output(self.name + " says: " + self.sound)
+    }
 
-    func introduce(self):
-        output "Hi! I am " + self.name
+    func introduce(self) {
+        output("Hi! I am " + self.name)
+    }
+}
 
-
-## ─────────────────────────────────────
-##  Define a class called 'Person'
-## ─────────────────────────────────────
-class Person:
-
-    init(self, name, age):
+class Person {
+    init(self, name, age) {
         self.name = name
         self.age  = age
+    }
 
-    func greet(self):
-        output "Hello! My name is " + self.name + " and I am " + self.age + " years old."
+    func greet(self) {
+        output("Hello! My name is " + self.name + " and I am " + self.age + " years old.")
+    }
 
-    func birthday(self):
+    func birthday(self) {
         self.age = self.age + 1
-        output self.name + " is now " + self.age + " years old!"
-
-
-## ─────────────────────────────────────
-##  Create objects using 'new'
-## ─────────────────────────────────────
+        output(self.name + " is now " + self.age + " years old!")
+    }
+}
 
 let cat = new Animal("Whiskers", "Meow")
 let dog = new Animal("Rex", "Woof")
@@ -48,7 +38,7 @@ cat.speak()
 dog.speak()
 cat.introduce()
 
-output ""
+output("")
 
 let ahmed = new Person("Ahmed", 20)
 ahmed.greet()

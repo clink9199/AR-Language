@@ -3,19 +3,22 @@
     "lineComment": "##"
   },
   "brackets": [
-    ["(", ")"]
+    ["(", ")"],
+    ["{", "}"]
   ],
   "autoClosingPairs": [
     { "open": "(", "close": ")" },
+    { "open": "{", "close": "}" },
     { "open": "\"", "close": "\"" }
   ],
   "surroundingPairs": [
     ["(", ")"],
+    ["{", "}"],
     ["\"", "\""]
   ],
   "indentationRules": {
-    "increaseIndentPattern": ":\\s*$",
-    "decreaseIndentPattern": "^\\s*(else\\s*:)"
+    "increaseIndentPattern": "\\{\\s*$",
+    "decreaseIndentPattern": "^\\s*\\}"
   },
   "wordPattern": "[a-zA-Z_][a-zA-Z0-9_]*"
 }
