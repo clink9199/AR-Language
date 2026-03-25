@@ -1,5 +1,5 @@
 <h1 align="center">AR Language</h1>
-<p align="center">A modern, object-oriented programming language built from scratch.</p>
+<p align="center">A modern, object-oriented programming language</p>
 <p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0-blue" />
   <img src="https://img.shields.io/badge/platform-Windows-lightgrey" />
