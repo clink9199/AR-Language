@@ -140,8 +140,8 @@ class Lexer:
 
     def tokenize(self) -> List[Token]:
         """Single pass — read every character until EOF."""
-        while self.current_char is not None:
-            ch = self.current_char
+        while self.pos < len(self.source):
+            ch: str = self.source[self.pos]  # always str, never None
 
             # ── Newline ──────────────────────────────
             if ch == "\n":
@@ -255,38 +255,39 @@ class Lexer:
 
     def _read_string(self):
         self.advance()  # skip opening "
-        chars = []
-        while self.current_char is not None and self.current_char != '"':
-            if self.current_char == "\\":
+        chars: List[str] = []
+        while self.pos < len(self.source) and self.source[self.pos] != '"':
+            if self.source[self.pos] == "\\":
                 self.advance()
-                esc = self.current_char
-                if esc == "n":
-                    chars.append("\n")
-                elif esc == "t":
-                    chars.append("\t")
-                else:
-                    chars.append(esc)
+                if self.pos < len(self.source):
+                    esc = self.source[self.pos]
+                    if esc == "n":
+                        chars.append("\n")
+                    elif esc == "t":
+                        chars.append("\t")
+                    else:
+                        chars.append(esc)
             else:
-                chars.append(self.current_char)
+                chars.append(self.source[self.pos])
             self.advance()
         self.advance()  # skip closing "
         self.add(TT.STRING, "".join(chars))
 
     def _read_number(self):
-        chars = []
-        while self.current_char is not None and (
-            self.current_char.isdigit() or self.current_char == "."
+        chars: List[str] = []
+        while self.pos < len(self.source) and (
+            self.source[self.pos].isdigit() or self.source[self.pos] == "."
         ):
-            chars.append(self.current_char)
+            chars.append(self.source[self.pos])
             self.advance()
         self.add(TT.NUMBER, "".join(chars))
 
     def _read_identifier(self):
-        chars = []
-        while self.current_char is not None and (
-            self.current_char.isalnum() or self.current_char == "_"
+        chars: List[str] = []
+        while self.pos < len(self.source) and (
+            self.source[self.pos].isalnum() or self.source[self.pos] == "_"
         ):
-            chars.append(self.current_char)
+            chars.append(self.source[self.pos])
             self.advance()
         word = "".join(chars)
         token_type = KEYWORDS.get(word, TT.IDENT)
