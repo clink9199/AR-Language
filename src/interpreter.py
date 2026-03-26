@@ -318,6 +318,10 @@ class Interpreter:
             result = left / right
             return int(result) if result == int(result) else result
         elif op == "%":
+            if isinstance(left, str) or isinstance(right, str):
+                raise TypeError(
+                    f"[AR] Cannot use '%' operator on {type(left).__name__} and {type(right).__name__}."
+                )
             if right == 0:
                 raise ZeroDivisionError("[AR] Cannot use remainder with zero.")
             return left % right
