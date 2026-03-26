@@ -142,6 +142,86 @@ class ArInstance:
 
 
 # ─────────────────────────────────────────────
+#  BUILT-IN FUNCTIONS
+# ─────────────────────────────────────────────
+
+
+class ArBuiltin:
+    """
+    A native function implemented in Python and exposed to AR code.
+    Stored in the global environment just like user functions.
+    """
+
+    def __init__(self, name: str, func):
+        self.name = name
+        self.func = func
+
+    def __call__(self, *args):
+        return self.func(*args)
+
+    def __repr__(self):
+        return f"<builtin {self.name}>"
+
+
+def _make_builtins(display_fn) -> dict:
+    """
+    Build the dict of all built-in functions available in every AR program.
+    display_fn is passed in so builtins can format values the AR way.
+    """
+    import math
+    import random as _random
+
+    def _input(prompt=""):
+        """Read a line of text from the user."""
+        return input(str(prompt))
+
+    def _to_number(x):
+        try:
+            v = float(str(x))
+            return int(v) if v == int(v) else v
+        except ValueError:
+            raise ValueError(f"[AR] Cannot convert '{x}' to a number.")
+
+    def _to_string(x):
+        return display_fn(x)
+
+    def _type_of(x):
+        if x is None:
+            return "null"
+        if isinstance(x, bool):
+            return "bool"
+        if isinstance(x, (int, float)):
+            return "number"
+        if isinstance(x, str):
+            return "string"
+        if isinstance(x, list):
+            return "array"
+        return "object"
+
+    return {
+        # ── Input ──
+        "input": ArBuiltin("input", _input),
+        # ── Type utilities ──
+        "to_number": ArBuiltin("to_number", _to_number),
+        "to_string": ArBuiltin("to_string", _to_string),
+        "type_of": ArBuiltin("type_of", _type_of),
+        # ── Math ──
+        "abs": ArBuiltin("abs", lambda x: abs(x)),
+        "floor": ArBuiltin("floor", lambda x: int(math.floor(x))),
+        "ceil": ArBuiltin("ceil", lambda x: int(math.ceil(x))),
+        "round": ArBuiltin("round", lambda x: int(round(x))),
+        "power": ArBuiltin("power", lambda base, exp: base**exp),
+        "sqrt": ArBuiltin("sqrt", lambda x: math.sqrt(x)),
+        # ── Random ──
+        "random": ArBuiltin("random", lambda: _random.random()),
+        "random_int": ArBuiltin(
+            "random_int", lambda lo, hi: _random.randint(int(lo), int(hi))
+        ),
+    }
+
+
+
+# ─────────────────────────────────────────────
 #  INTERPRETER
 # ─────────────────────────────────────────────
 
@@ -153,9 +233,10 @@ class Interpreter:
     """
 
     def __init__(self):
-        # The global environment is the outermost scope.
-        # All top-level variables and functions live here.
         self.global_env = Environment()
+        # Register all built-in functions into the global scope
+        for name, builtin in _make_builtins(self._display).items():
+            self.global_env.set(name, builtin)
 
     def run(self, program: Program):
         """Run a parsed program node in the global environment."""
@@ -327,8 +408,11 @@ class Interpreter:
                 return self._call_function(method, [obj] + args)
             raise TypeError(f"[AR] '{member}' is not callable on this object.")
 
-        # Regular function call:  greet("Ahmed")
+        # Regular function call:  greet("Ahmed") or abs(-5)
         func = self.visit(node.callee, env)
+
+        if isinstance(func, ArBuiltin):
+            return func(*args)
 
         if isinstance(func, ArFunction):
             return self._call_function(func, args)

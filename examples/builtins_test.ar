@@ -1,0 +1,16 @@
+## Testing built-in functions
+
+output(abs(-42))
+output(floor(3.9))
+output(ceil(3.1))
+output(round(3.5))
+output(power(2, 10))
+output(sqrt(16))
+output(type_of(42))
+output(type_of("hello"))
+output(type_of(true))
+output(type_of([1, 2]))
+output(to_string(100))
+output(to_number("55"))
+let r = random_int(1, 6)
+output("Dice roll: " + r)
