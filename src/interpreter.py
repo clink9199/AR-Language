@@ -401,7 +401,7 @@ class Interpreter:
             if isinstance(obj, ArInstance):
                 obj.set_property(node.target.member, value)
                 return
-            raise AttributeError(f"[AR] Cannot set property on non-object.")
+            raise AttributeError("[AR] Cannot set property on non-object.")
         elif isinstance(node.target, Identifier):
             # It's a variable assignment: x = 10
             try:

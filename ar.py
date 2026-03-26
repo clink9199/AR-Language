@@ -23,11 +23,11 @@ import sys
 import os
 
 # Make sure Python can find our 'src' package
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # noqa: E402
 
-from src.lexer import Lexer
-from src.parser import Parser
-from src.interpreter import Interpreter
+from src.lexer import Lexer  # noqa: E402
+from src.parser import Parser  # noqa: E402
+from src.interpreter import Interpreter  # noqa: E402
 
 
 def run_source(source: str, interpreter: Interpreter):
@@ -56,7 +56,7 @@ def run_source(source: str, interpreter: Interpreter):
     except ZeroDivisionError as e:
         print(f"\n  ❌ Math Error: {e}\n")
     except RecursionError:
-        print(f"\n  ❌ Stack Overflow: Too many nested function calls.\n")
+        print("\n  ❌ Stack Overflow: Too many nested function calls.\n")
     except Exception as e:
         print(f"\n  ❌ Runtime Error: {e}\n")
 
@@ -109,7 +109,7 @@ def run_repl():
 
             # Simple heuristic: if last non-empty line ends with ':',
             # we're expecting a block — keep collecting
-            stripped_lines = [l for l in buffer if l.strip()]
+            stripped_lines = [line for line in buffer if line.strip()]
             if stripped_lines and stripped_lines[-1].rstrip().endswith(":"):
                 continue  # wait for the block body
 
