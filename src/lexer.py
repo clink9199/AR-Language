@@ -21,59 +21,59 @@ class TT(Enum):
     """TT = Token Type."""
 
     # ── Literals ───────────────────────────────
-    NUMBER   = auto()
-    STRING   = auto()
-    BOOL     = auto()
-    NULL     = auto()
+    NUMBER = auto()
+    STRING = auto()
+    BOOL = auto()
+    NULL = auto()
 
     # ── Identifier ─────────────────────────────
-    IDENT    = auto()
+    IDENT = auto()
 
     # ── Keywords ───────────────────────────────
-    OUTPUT   = auto()
-    LET      = auto()
-    FUNC     = auto()
-    RETURN   = auto()
-    IF       = auto()
-    ELSE     = auto()
-    LOOP     = auto()
-    FOR      = auto()
-    IN       = auto()
-    IMPORT   = auto()
-    CLASS    = auto()
-    INIT     = auto()
-    NEW      = auto()
-    SELF     = auto()
-    AND      = auto()
-    OR       = auto()
-    NOT      = auto()
+    OUTPUT = auto()
+    LET = auto()
+    FUNC = auto()
+    RETURN = auto()
+    IF = auto()
+    ELSE = auto()
+    LOOP = auto()
+    FOR = auto()
+    IN = auto()
+    IMPORT = auto()
+    CLASS = auto()
+    INIT = auto()
+    NEW = auto()
+    SELF = auto()
+    AND = auto()
+    OR = auto()
+    NOT = auto()
 
     # ── Operators ──────────────────────────────
-    PLUS     = auto()
-    MINUS    = auto()
-    STAR     = auto()
-    SLASH    = auto()
-    EQ_EQ    = auto()
-    BANG_EQ  = auto()
-    LT       = auto()
-    GT       = auto()
-    LT_EQ    = auto()
-    GT_EQ    = auto()
-    EQUALS   = auto()
+    PLUS = auto()
+    MINUS = auto()
+    STAR = auto()
+    SLASH = auto()
+    EQ_EQ = auto()
+    BANG_EQ = auto()
+    LT = auto()
+    GT = auto()
+    LT_EQ = auto()
+    GT_EQ = auto()
+    EQUALS = auto()
 
     # ── Punctuation ────────────────────────────
-    LPAREN   = auto()   # (
-    RPAREN   = auto()   # )
-    LBRACE   = auto()   # {
-    RBRACE   = auto()   # }
-    LBRACKET = auto()   # [
-    RBRACKET = auto()   # ]
-    COMMA    = auto()   # ,
-    DOT      = auto()   # .
+    LPAREN = auto()  # (
+    RPAREN = auto()  # )
+    LBRACE = auto()  # {
+    RBRACE = auto()  # }
+    LBRACKET = auto()  # [
+    RBRACKET = auto()  # ]
+    COMMA = auto()  # ,
+    DOT = auto()  # .
 
     # ── Structure ──────────────────────────────
-    NEWLINE  = auto()
-    EOF      = auto()
+    NEWLINE = auto()
+    EOF = auto()
 
 
 @dataclass
@@ -88,25 +88,25 @@ class Token:
 
 KEYWORDS: dict = {
     "output": TT.OUTPUT,
-    "let":    TT.LET,
-    "func":   TT.FUNC,
+    "let": TT.LET,
+    "func": TT.FUNC,
     "return": TT.RETURN,
-    "if":     TT.IF,
-    "else":   TT.ELSE,
-    "loop":   TT.LOOP,
-    "for":    TT.FOR,
-    "in":     TT.IN,
+    "if": TT.IF,
+    "else": TT.ELSE,
+    "loop": TT.LOOP,
+    "for": TT.FOR,
+    "in": TT.IN,
     "import": TT.IMPORT,
-    "class":  TT.CLASS,
-    "init":   TT.INIT,
-    "new":    TT.NEW,
-    "self":   TT.SELF,
-    "true":   TT.BOOL,
-    "false":  TT.BOOL,
-    "null":   TT.NULL,
-    "and":    TT.AND,
-    "or":     TT.OR,
-    "not":    TT.NOT,
+    "class": TT.CLASS,
+    "init": TT.INIT,
+    "new": TT.NEW,
+    "self": TT.SELF,
+    "true": TT.BOOL,
+    "false": TT.BOOL,
+    "null": TT.NULL,
+    "and": TT.AND,
+    "or": TT.OR,
+    "not": TT.NOT,
 }
 
 
@@ -118,8 +118,8 @@ class Lexer:
 
     def __init__(self, source: str):
         self.source = source
-        self.pos    = 0
-        self.line   = 1
+        self.pos = 0
+        self.line = 1
         self.tokens: List[Token] = []
 
     @property
@@ -149,7 +149,9 @@ class Lexer:
                 self.line += 1
                 # Only add NEWLINE if there's a meaningful previous token
                 if self.tokens and self.tokens[-1].type not in (
-                    TT.NEWLINE, TT.LBRACE, TT.RBRACE
+                    TT.NEWLINE,
+                    TT.LBRACE,
+                    TT.RBRACE,
                 ):
                     self.add(TT.NEWLINE)
 
@@ -180,30 +182,68 @@ class Lexer:
 
             # ── Two-character operators ───────────────
             elif ch == "=" and self.peek() == "=":
-                self.advance(); self.advance(); self.add(TT.EQ_EQ, "==")
+                self.advance()
+                self.advance()
+                self.add(TT.EQ_EQ, "==")
             elif ch == "!" and self.peek() == "=":
-                self.advance(); self.advance(); self.add(TT.BANG_EQ, "!=")
+                self.advance()
+                self.advance()
+                self.add(TT.BANG_EQ, "!=")
             elif ch == "<" and self.peek() == "=":
-                self.advance(); self.advance(); self.add(TT.LT_EQ, "<=")
+                self.advance()
+                self.advance()
+                self.add(TT.LT_EQ, "<=")
             elif ch == ">" and self.peek() == "=":
-                self.advance(); self.advance(); self.add(TT.GT_EQ, ">=")
+                self.advance()
+                self.advance()
+                self.add(TT.GT_EQ, ">=")
 
             # ── Single-character operators / punctuation ──
-            elif ch == "=":  self.advance(); self.add(TT.EQUALS,  "=")
-            elif ch == "+":  self.advance(); self.add(TT.PLUS,    "+")
-            elif ch == "-":  self.advance(); self.add(TT.MINUS,   "-")
-            elif ch == "*":  self.advance(); self.add(TT.STAR,    "*")
-            elif ch == "/":  self.advance(); self.add(TT.SLASH,   "/")
-            elif ch == "<":  self.advance(); self.add(TT.LT,      "<")
-            elif ch == ">":  self.advance(); self.add(TT.GT,      ">")
-            elif ch == "(":  self.advance(); self.add(TT.LPAREN,  "(")
-            elif ch == ")":  self.advance(); self.add(TT.RPAREN,  ")")
-            elif ch == "{":  self.advance(); self.add(TT.LBRACE,  "{")
-            elif ch == "}":  self.advance(); self.add(TT.RBRACE,  "}")
-            elif ch == "[":  self.advance(); self.add(TT.LBRACKET, "[")
-            elif ch == "]":  self.advance(); self.add(TT.RBRACKET, "]")
-            elif ch == ",":  self.advance(); self.add(TT.COMMA,   ",")
-            elif ch == ".":  self.advance(); self.add(TT.DOT,     ".")
+            elif ch == "=":
+                self.advance()
+                self.add(TT.EQUALS, "=")
+            elif ch == "+":
+                self.advance()
+                self.add(TT.PLUS, "+")
+            elif ch == "-":
+                self.advance()
+                self.add(TT.MINUS, "-")
+            elif ch == "*":
+                self.advance()
+                self.add(TT.STAR, "*")
+            elif ch == "/":
+                self.advance()
+                self.add(TT.SLASH, "/")
+            elif ch == "<":
+                self.advance()
+                self.add(TT.LT, "<")
+            elif ch == ">":
+                self.advance()
+                self.add(TT.GT, ">")
+            elif ch == "(":
+                self.advance()
+                self.add(TT.LPAREN, "(")
+            elif ch == ")":
+                self.advance()
+                self.add(TT.RPAREN, ")")
+            elif ch == "{":
+                self.advance()
+                self.add(TT.LBRACE, "{")
+            elif ch == "}":
+                self.advance()
+                self.add(TT.RBRACE, "}")
+            elif ch == "[":
+                self.advance()
+                self.add(TT.LBRACKET, "[")
+            elif ch == "]":
+                self.advance()
+                self.add(TT.RBRACKET, "]")
+            elif ch == ",":
+                self.advance()
+                self.add(TT.COMMA, ",")
+            elif ch == ".":
+                self.advance()
+                self.add(TT.DOT, ".")
 
             else:
                 raise SyntaxError(
@@ -220,9 +260,12 @@ class Lexer:
             if self.current_char == "\\":
                 self.advance()
                 esc = self.current_char
-                if esc == "n":   chars.append("\n")
-                elif esc == "t": chars.append("\t")
-                else:            chars.append(esc)
+                if esc == "n":
+                    chars.append("\n")
+                elif esc == "t":
+                    chars.append("\t")
+                else:
+                    chars.append(esc)
             else:
                 chars.append(self.current_char)
             self.advance()

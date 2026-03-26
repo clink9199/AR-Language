@@ -25,8 +25,8 @@ import os
 # Make sure Python can find our 'src' package
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from src.lexer       import Lexer
-from src.parser      import Parser
+from src.lexer import Lexer
+from src.parser import Parser
 from src.interpreter import Interpreter
 
 
@@ -89,8 +89,8 @@ def run_repl():
     print("╚══════════════════════════════════════╝")
     print()
 
-    interpreter = Interpreter()   # shared state across REPL entries
-    buffer = []                   # accumulate multi-line blocks
+    interpreter = Interpreter()  # shared state across REPL entries
+    buffer = []  # accumulate multi-line blocks
 
     while True:
         try:
@@ -106,12 +106,12 @@ def run_repl():
 
             # Try to run whatever is in the buffer
             source = "\n".join(buffer)
-            
-            # Simple heuristic: if last non-empty line ends with ':', 
+
+            # Simple heuristic: if last non-empty line ends with ':',
             # we're expecting a block — keep collecting
             stripped_lines = [l for l in buffer if l.strip()]
             if stripped_lines and stripped_lines[-1].rstrip().endswith(":"):
-                continue   # wait for the block body
+                continue  # wait for the block body
 
             # Otherwise try to run and clear buffer
             run_source(source, interpreter)

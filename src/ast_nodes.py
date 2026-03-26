@@ -21,14 +21,15 @@ What is an AST?
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
 
-
 # ─────────────────────────────────────────────
 #  BASE
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class Node:
     """Base class for every AST node."""
+
     pass
 
 
@@ -36,12 +37,14 @@ class Node:
 #  PROGRAM (root of every .ar file)
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class Program(Node):
     """
     The root node of the entire program.
     Every .ar file becomes one Program node containing a list of statements.
     """
+
     statements: List[Node] = field(default_factory=list)
 
 
@@ -49,33 +52,39 @@ class Program(Node):
 #  LITERALS  (raw values like 42, "hello", true)
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class NumberLiteral(Node):
     """A plain number.  Example:  42   or   3.14"""
+
     value: float
 
 
 @dataclass
 class StringLiteral(Node):
     """A text value wrapped in double quotes.  Example:  "Hello World" """
+
     value: str
 
 
 @dataclass
 class BoolLiteral(Node):
     """true or false"""
+
     value: bool
 
 
 @dataclass
 class NullLiteral(Node):
     """null — represents the absence of a value"""
+
     pass
 
 
 @dataclass
 class ArrayLiteral(Node):
     """An array of values. Example: [1, 2, 3]"""
+
     elements: List[Node] = field(default_factory=list)
 
 
@@ -83,18 +92,21 @@ class ArrayLiteral(Node):
 #  IDENTIFIER  (a variable name like "x" or "name")
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class Identifier(Node):
     """
     Refers to a variable or function by name.
     Example:  output name    <-- "name" is an Identifier
     """
+
     name: str
 
 
 # ─────────────────────────────────────────────
 #  EXPRESSIONS  (things that produce a value)
 # ─────────────────────────────────────────────
+
 
 @dataclass
 class BinaryOp(Node):
@@ -103,6 +115,7 @@ class BinaryOp(Node):
     Example:  5 + 3    left=5, op="+", right=3
     Supported ops: +  -  *  /  ==  !=  <  >  <=  >=  and  or
     """
+
     left: Node
     op: str
     right: Node
@@ -114,6 +127,7 @@ class UnaryOp(Node):
     A single-operand operation.
     Example:  not true    op="not", operand=true
     """
+
     op: str
     operand: Node
 
@@ -126,7 +140,8 @@ class CallExpression(Node):
       callee = Identifier("greet")
       args   = [StringLiteral("Ahmed")]
     """
-    callee: Node          # What to call (an Identifier, or a MemberAccess)
+
+    callee: Node  # What to call (an Identifier, or a MemberAccess)
     args: List[Node] = field(default_factory=list)
 
 
@@ -138,6 +153,7 @@ class MemberAccess(Node):
       obj    = Identifier("cat")
       member = "speak"
     """
+
     obj: Node
     member: str
 
@@ -150,6 +166,7 @@ class IndexAccess(Node):
       obj   = Identifier("arr")
       index = NumberLiteral(0)
     """
+
     obj: Node
     index: Node
 
@@ -162,6 +179,7 @@ class NewExpression(Node):
       class_name = "Animal"
       args       = [StringLiteral("Cat")]
     """
+
     class_name: str
     args: List[Node] = field(default_factory=list)
 
@@ -170,12 +188,14 @@ class NewExpression(Node):
 #  STATEMENTS  (things that DO something)
 # ─────────────────────────────────────────────
 
+
 @dataclass
 class OutputStatement(Node):
     """
     Prints a value to the console.
     Example:  output "Hello, World!"
     """
+
     value: Node
 
 
@@ -187,6 +207,7 @@ class LetStatement(Node):
       name  = "name"
       value = StringLiteral("Ahmed")
     """
+
     name: str
     value: Node
 
@@ -197,7 +218,8 @@ class AssignStatement(Node):
     Changes the value of an existing variable or property.
     Example:  x = 10     or     self.name = "Ahmed"
     """
-    target: Node   # Identifier or MemberAccess
+
+    target: Node  # Identifier or MemberAccess
     value: Node
 
 
@@ -210,6 +232,7 @@ class IndexAssignment(Node):
       index = NumberLiteral(0)
       value = NumberLiteral(5)
     """
+
     obj: Node
     index: Node
     value: Node
@@ -221,6 +244,7 @@ class ReturnStatement(Node):
     Returns a value from a function.
     Example:  return x + 1
     """
+
     value: Optional[Node] = None
 
 
@@ -234,6 +258,7 @@ class IfStatement(Node):
         else:
             output "small"
     """
+
     condition: Node
     then_body: List[Node] = field(default_factory=list)
     else_body: List[Node] = field(default_factory=list)
@@ -248,6 +273,7 @@ class LoopStatement(Node):
             output x
             x = x + 1
     """
+
     condition: Node
     body: List[Node] = field(default_factory=list)
 
@@ -258,6 +284,7 @@ class ForStatement(Node):
     For-each loop over an iterable.
     Example: for item in items { ... }
     """
+
     iterator_name: str
     iterable: Node
     body: List[Node] = field(default_factory=list)
@@ -269,12 +296,14 @@ class ImportStatement(Node):
     Importing another file.
     Example: import "math.ar"
     """
+
     filepath: str
 
 
 # ─────────────────────────────────────────────
 #  DEFINITIONS  (functions & classes)
 # ─────────────────────────────────────────────
+
 
 @dataclass
 class FuncDefinition(Node):
@@ -284,6 +313,7 @@ class FuncDefinition(Node):
         func add(a, b):
             return a + b
     """
+
     name: str
     params: List[str] = field(default_factory=list)
     body: List[Node] = field(default_factory=list)
@@ -300,6 +330,7 @@ class ClassDefinition(Node):
             func speak(self):
                 output self.name
     """
+
     name: str
     methods: List[FuncDefinition] = field(default_factory=list)
 
@@ -310,4 +341,5 @@ class ExpressionStatement(Node):
     Wraps an expression used as a standalone statement.
     Example:  cat.speak()   — a method call used alone on a line.
     """
+
     expression: Node

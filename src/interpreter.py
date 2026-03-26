@@ -31,9 +31,35 @@ OOP support:
   so they can access/modify the object's own properties.
 """
 
-from src.ast_nodes import *
+from src.ast_nodes import (
+    Node,
+    Program,
+    NumberLiteral,
+    StringLiteral,
+    BoolLiteral,
+    NullLiteral,
+    ArrayLiteral,
+    Identifier,
+    BinaryOp,
+    UnaryOp,
+    MemberAccess,
+    IndexAccess,
+    CallExpression,
+    NewExpression,
+    ExpressionStatement,
+    OutputStatement,
+    LetStatement,
+    AssignStatement,
+    IndexAssignment,
+    ReturnStatement,
+    IfStatement,
+    LoopStatement,
+    ForStatement,
+    ImportStatement,
+    FuncDefinition,
+    ClassDefinition,
+)
 from src.environment import Environment
-
 
 # ─────────────────────────────────────────────
 #  SPECIAL CONTROL FLOW SIGNALS
@@ -41,11 +67,13 @@ from src.environment import Environment
 #  to implement  return  without breaking the call stack.
 # ─────────────────────────────────────────────
 
+
 class ReturnSignal(Exception):
     """
     Raised when 'return' is encountered inside a function.
     Bubbles up through the call stack until the function call catches it.
     """
+
     def __init__(self, value):
         self.value = value
 
@@ -54,15 +82,17 @@ class ReturnSignal(Exception):
 #  OOP RUNTIME OBJECTS
 # ─────────────────────────────────────────────
 
+
 class ArFunction:
     """
     A user-defined function or method defined in AR Language.
     Stores the definition (params + body) and the environment
     where it was defined (for closures).
     """
+
     def __init__(self, definition: FuncDefinition, closure: Environment):
         self.definition = definition
-        self.closure    = closure   # the environment snapshot when func was defined
+        self.closure = closure  # the environment snapshot when func was defined
 
 
 class ArClass:
@@ -70,12 +100,13 @@ class ArClass:
     A class defined in AR Language using the 'class' keyword.
     Stores the class name and all its methods.
     """
+
     def __init__(self, definition: ClassDefinition, closure: Environment):
         self.definition = definition
-        self.closure    = closure
-        self.name       = definition.name
+        self.closure = closure
+        self.name = definition.name
         # Build a method lookup table: name → FuncDefinition
-        self.methods    = {m.name: m for m in definition.methods}
+        self.methods = {m.name: m for m in definition.methods}
 
 
 class ArInstance:
@@ -84,14 +115,17 @@ class ArInstance:
     Created with the 'new' keyword.
     Has its own property dictionary (like a personal storage box).
     """
+
     def __init__(self, ar_class: ArClass):
-        self.ar_class   = ar_class
-        self.properties = {}   # e.g.  {"name": "Ahmed", "age": 25}
+        self.ar_class = ar_class
+        self.properties = {}  # e.g.  {"name": "Ahmed", "age": 25}
 
     def get_property(self, name: str):
         if name in self.properties:
             return self.properties[name]
-        raise AttributeError(f"[AR] Object of class '{self.ar_class.name}' has no property '{name}'.")
+        raise AttributeError(
+            f"[AR] Object of class '{self.ar_class.name}' has no property '{name}'."
+        )
 
     def set_property(self, name: str, value):
         self.properties[name] = value
@@ -110,6 +144,7 @@ class ArInstance:
 # ─────────────────────────────────────────────
 #  INTERPRETER
 # ─────────────────────────────────────────────
+
 
 class Interpreter:
     """
@@ -183,38 +218,50 @@ class Interpreter:
         Evaluate both sides, then apply the operator.
         Example:  5 + 3  →  evaluate 5, evaluate 3, add them → 8
         """
-        left  = self.visit(node.left,  env)
+        left = self.visit(node.left, env)
         right = self.visit(node.right, env)
-        op    = node.op
+        op = node.op
 
         if op == "+":
             # Special: "hello" + " world" = "hello world"  (string concatenation)
             if isinstance(left, str) or isinstance(right, str):
                 return self._display(left) + self._display(right)
             return left + right
-        elif op == "-":   return left - right
-        elif op == "*":   return left * right
+        elif op == "-":
+            return left - right
+        elif op == "*":
+            return left * right
         elif op == "/":
             if right == 0:
                 raise ZeroDivisionError("[AR] Cannot divide by zero.")
             result = left / right
             return int(result) if result == int(result) else result
-        elif op == "==":  return left == right
-        elif op == "!=":  return left != right
-        elif op == "<":   return left < right
-        elif op == ">":   return left > right
-        elif op == "<=":  return left <= right
-        elif op == ">=":  return left >= right
-        elif op == "and": return bool(left) and bool(right)
-        elif op == "or":  return bool(left) or bool(right)
+        elif op == "==":
+            return left == right
+        elif op == "!=":
+            return left != right
+        elif op == "<":
+            return left < right
+        elif op == ">":
+            return left > right
+        elif op == "<=":
+            return left <= right
+        elif op == ">=":
+            return left >= right
+        elif op == "and":
+            return bool(left) and bool(right)
+        elif op == "or":
+            return bool(left) or bool(right)
         else:
             raise RuntimeError(f"[AR] Unknown operator: {op}")
 
     def visit_UnaryOp(self, node: UnaryOp, env: Environment):
         """Negate or invert a single value."""
         operand = self.visit(node.operand, env)
-        if node.op == "not": return not operand
-        if node.op == "-":   return -operand
+        if node.op == "not":
+            return not operand
+        if node.op == "-":
+            return -operand
 
     def visit_MemberAccess(self, node: MemberAccess, env: Environment):
         """
@@ -224,7 +271,9 @@ class Interpreter:
         obj = self.visit(node.obj, env)
         if isinstance(obj, ArInstance):
             return obj.get_property(node.member)
-        raise AttributeError(f"[AR] Cannot access member '{node.member}' on {type(obj).__name__}.")
+        raise AttributeError(
+            f"[AR] Cannot access member '{node.member}' on {type(obj).__name__}."
+        )
 
     def visit_IndexAccess(self, node: IndexAccess, env: Environment):
         obj = self.visit(node.obj, env)
@@ -255,13 +304,16 @@ class Interpreter:
                 if member == "length":
                     return len(obj)
                 raise AttributeError(f"[AR] Array has no method '{member}'")
-                
+
             # --- Native String Methods ---
             if isinstance(obj, str):
-                if member == "upper": return obj.upper()
-                if member == "lower": return obj.lower()
-                if member == "length": return len(obj)
-                if member == "split": 
+                if member == "upper":
+                    return obj.upper()
+                if member == "lower":
+                    return obj.lower()
+                if member == "length":
+                    return len(obj)
+                if member == "split":
                     sep = args[0] if args else " "
                     return obj.split(sep)
                 raise AttributeError(f"[AR] String has no method '{member}'")
@@ -395,7 +447,7 @@ class Interpreter:
         iterable = self.visit(node.iterable, env)
         if not isinstance(iterable, (list, str)):
             raise TypeError(f"[AR] Cannot iterate over {type(iterable).__name__}")
-        
+
         for item in iterable:
             loop_env = Environment(parent=env)
             loop_env.set(node.iterator_name, item)
@@ -416,20 +468,21 @@ class Interpreter:
 
     def visit_ImportStatement(self, node: ImportStatement, env: Environment):
         import os
+
         if not os.path.exists(node.filepath):
             raise FileNotFoundError(f"[AR] Imported file not found: {node.filepath}")
-            
-        with open(node.filepath, 'r', encoding='utf-8') as f:
+
+        with open(node.filepath, "r", encoding="utf-8") as f:
             source = f.read()
-            
+
         from src.lexer import Lexer
         from src.parser import Parser
-        
+
         lexer = Lexer(source)
         tokens = lexer.tokenize()
         parser = Parser(tokens)
         program = parser.parse()
-        
+
         for stmt in program.statements:
             self.visit(stmt, env)
 
@@ -445,9 +498,12 @@ class Interpreter:
 
     def _display(self, value) -> str:
         """Convert a value to a human-readable string for output."""
-        if value is None:    return "null"
-        if value is True:    return "true"
-        if value is False:   return "false"
+        if value is None:
+            return "null"
+        if value is True:
+            return "true"
+        if value is False:
+            return "false"
         if isinstance(value, list):
             return "[" + ", ".join(self._display(v) for v in value) + "]"
         return str(value)

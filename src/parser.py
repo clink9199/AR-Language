@@ -26,7 +26,34 @@ New syntax:
 
 from typing import List
 from src.lexer import Token, TT
-from src.ast_nodes import *
+from src.ast_nodes import (
+    Node,
+    Program,
+    NumberLiteral,
+    StringLiteral,
+    BoolLiteral,
+    NullLiteral,
+    ArrayLiteral,
+    Identifier,
+    BinaryOp,
+    UnaryOp,
+    MemberAccess,
+    IndexAccess,
+    CallExpression,
+    NewExpression,
+    ExpressionStatement,
+    OutputStatement,
+    LetStatement,
+    AssignStatement,
+    IndexAssignment,
+    ReturnStatement,
+    IfStatement,
+    LoopStatement,
+    ForStatement,
+    ImportStatement,
+    FuncDefinition,
+    ClassDefinition,
+)
 
 
 class Parser:
@@ -88,15 +115,24 @@ class Parser:
     def parse_statement(self) -> Node:
         tok = self.current
 
-        if tok.type == TT.OUTPUT:  return self.parse_output()
-        if tok.type == TT.LET:     return self.parse_let()
-        if tok.type == TT.RETURN:  return self.parse_return()
-        if tok.type == TT.IF:      return self.parse_if()
-        if tok.type == TT.LOOP:    return self.parse_loop()
-        if tok.type == TT.FOR:     return self.parse_for()
-        if tok.type == TT.IMPORT:  return self.parse_import()
-        if tok.type == TT.FUNC:    return self.parse_func()
-        if tok.type == TT.CLASS:   return self.parse_class()
+        if tok.type == TT.OUTPUT:
+            return self.parse_output()
+        if tok.type == TT.LET:
+            return self.parse_let()
+        if tok.type == TT.RETURN:
+            return self.parse_return()
+        if tok.type == TT.IF:
+            return self.parse_if()
+        if tok.type == TT.LOOP:
+            return self.parse_loop()
+        if tok.type == TT.FOR:
+            return self.parse_for()
+        if tok.type == TT.IMPORT:
+            return self.parse_import()
+        if tok.type == TT.FUNC:
+            return self.parse_func()
+        if tok.type == TT.CLASS:
+            return self.parse_class()
         return self.parse_expression_statement()
 
     def parse_output(self) -> OutputStatement:
@@ -146,7 +182,9 @@ class Parser:
             self.advance()  # consume 'else'
             else_body = self.parse_block()
 
-        return IfStatement(condition=condition, then_body=then_body, else_body=else_body)
+        return IfStatement(
+            condition=condition, then_body=then_body, else_body=else_body
+        )
 
     def parse_loop(self) -> LoopStatement:
         """
@@ -177,7 +215,9 @@ class Parser:
         import "math.ar"
         """
         self.advance()  # consume 'import'
-        filepath = self.expect(TT.STRING, "Expected string file path after 'import'.").value
+        filepath = self.expect(
+            TT.STRING, "Expected string file path after 'import'."
+        ).value
         self.match(TT.NEWLINE)
         return ImportStatement(filepath=filepath)
 
@@ -356,14 +396,28 @@ class Parser:
     def parse_primary(self) -> Node:
         tok = self.current
 
-        if tok.type == TT.NUMBER: self.advance(); return NumberLiteral(float(tok.value))
-        if tok.type == TT.STRING: self.advance(); return StringLiteral(tok.value)
-        if tok.type == TT.BOOL:   self.advance(); return BoolLiteral(tok.value == "true")
-        if tok.type == TT.NULL:   self.advance(); return NullLiteral()
-        if tok.type == TT.SELF:   self.advance(); return Identifier("self")
-        if tok.type == TT.IDENT:  self.advance(); return Identifier(tok.value)
-        if tok.type == TT.NEW:    return self.parse_new()
-        if tok.type == TT.LBRACKET: return self.parse_array_literal()
+        if tok.type == TT.NUMBER:
+            self.advance()
+            return NumberLiteral(float(tok.value))
+        if tok.type == TT.STRING:
+            self.advance()
+            return StringLiteral(tok.value)
+        if tok.type == TT.BOOL:
+            self.advance()
+            return BoolLiteral(tok.value == "true")
+        if tok.type == TT.NULL:
+            self.advance()
+            return NullLiteral()
+        if tok.type == TT.SELF:
+            self.advance()
+            return Identifier("self")
+        if tok.type == TT.IDENT:
+            self.advance()
+            return Identifier(tok.value)
+        if tok.type == TT.NEW:
+            return self.parse_new()
+        if tok.type == TT.LBRACKET:
+            return self.parse_array_literal()
 
         if tok.type == TT.LPAREN:
             self.advance()
