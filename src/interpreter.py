@@ -236,6 +236,10 @@ class Interpreter:
                 raise ZeroDivisionError("[AR] Cannot divide by zero.")
             result = left / right
             return int(result) if result == int(result) else result
+        elif op == "%":
+            if right == 0:
+                raise ZeroDivisionError("[AR] Cannot use remainder with zero.")
+            return left % right
         elif op == "==":
             return left == right
         elif op == "!=":

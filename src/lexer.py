@@ -60,6 +60,7 @@ class TT(Enum):
     LT_EQ = auto()
     GT_EQ = auto()
     EQUALS = auto()
+    PERCENT = auto()  # %
 
     # ── Punctuation ────────────────────────────
     LPAREN = auto()  # (
@@ -244,6 +245,9 @@ class Lexer:
             elif ch == ".":
                 self.advance()
                 self.add(TT.DOT, ".")
+            elif ch == "%":
+                self.advance()
+                self.add(TT.PERCENT, "%")
 
             else:
                 raise SyntaxError(

@@ -357,7 +357,7 @@ class Parser:
 
     def parse_multiplication(self) -> Node:
         left = self.parse_unary()
-        while self.check(TT.STAR, TT.SLASH):
+        while self.check(TT.STAR, TT.SLASH, TT.PERCENT):
             op = self.advance().value
             right = self.parse_unary()
             left = BinaryOp(left=left, op=op, right=right)
